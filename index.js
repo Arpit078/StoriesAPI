@@ -22,7 +22,7 @@ const cron = require('node-cron');
 const link_to_site = `https://stories-api.onrender.com/`
 
 
-cron.schedule('0 */1 * * * *', () => {
+cron.schedule('0 */20 * * * *', () => {
 
 axios.get(link_to_site, { 
     headers: { "Accept-Encoding": "gzip,deflate,compress" } 
