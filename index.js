@@ -4,7 +4,7 @@ require("dotenv").config();
 const fs = require("fs")
 const app = require("./app")
 const random_number = Math.floor(Math.random() * 96)
-const PORT = 5000 || process.env.PORT
+const PORT = process.env.PORT || 5000 
 
 let link =""
 
@@ -48,5 +48,5 @@ app.get("/",(req,res)=>{
 
 
 app.listen(PORT,(req,res)=>{
-    console.log("connected!")
+    console.log(`connected! at ${PORT}`)
 })
