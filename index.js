@@ -39,8 +39,6 @@ axios.get(link_to_site, {
 
 // --------------------------------------------------------------------------------------------------//
 
-let link_today ="https://munshipremchandkikahani.blogspot.com/2017/09/poos-ki-raat.html"
-
 
 
 cron.schedule('0 0 * * *', async () => {
@@ -49,22 +47,32 @@ cron.schedule('0 0 * * *', async () => {
         fs.readFile("stories.json", function(err, data) {
             
             // Converting to JSON
-            const story_url = JSON.parse(data);
-            link_today = story_url.premchand[random_number].url// update link for today
-        })
-        console.log(link_today)
+        const story_url = JSON.parse(data);
+        const link_today = story_url.premchand[random_number].url
+        if(link_today = link_yest){
+            link_today = story_url.premchand[Math.floor(Math.random()*96)].url
+        }
+    
+
+
         const date = new Date()
         const auth =new google.auth.GoogleAuth({
             keyFile : "cred.json",
             scopes: "https://www.googleapis.com/auth/spreadsheets"
           })
-          const client = await auth.getClient();
+          const client = auth.getClient();
         
           const googlesheets = google.sheets({version:"v4",auth: client})
         
           const spreadsheetId = "1AeJoJQ2qEWy1y-3Fu2vP8917zOQb90nToplS6x5Z0Qk"
           
-          const appendRows = await googlesheets.spreadsheets.values.append({
+          const viewRows = googlesheets.spreadsheets.values.get({
+            auth,
+            spreadsheetId,
+            range:"data!A:B",
+          })
+
+          const appendRows = googlesheets.spreadsheets.values.append({
             auth,
             spreadsheetId,
             range:"data!A:B",
@@ -75,21 +83,16 @@ cron.schedule('0 0 * * *', async () => {
                 ]
             }
           })
+        })
+
         
        
 
 });
 
+// -----------------------------------------------------------------------------------------------------//
 
 
-
-
-
-    //   console.log(story_url.links[random_number])
-     
-    //  console.log(story)
-
-    //less go with local variable here!
 let sendArr = []
 async function scrape(link){
     await axios.get(link)
@@ -122,6 +125,7 @@ app.get("/",async (req,res)=>{
       })
       const len = viewRows.data.values.length -1 
       const tareek = viewRows.data.values[len][0].slice(0,10)
+      const link_yest = viewRows.data.values[len][1]
       let link = ""
       tod = true
       if(tod){
