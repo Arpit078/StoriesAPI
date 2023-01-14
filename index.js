@@ -22,17 +22,17 @@ const cron = require('node-cron');
 const link_to_site = `https://stories-api.onrender.com/`
 
 
-cron.schedule('0 */20 * * * *', () => {
+// cron.schedule('0 */20 * * * *', () => {
 
-axios.get(link_to_site, { 
-    headers: { "Accept-Encoding": "gzip,deflate,compress" } 
-})
-    .then((req,res) => {console.log(`ok`)})
-    .catch((err)=>{
-    // console.log(err)
-    })
+// axios.get(link_to_site, { 
+//     headers: { "Accept-Encoding": "gzip,deflate,compress" } 
+// })
+//     .then((req,res) => {console.log(`ok`)})
+//     .catch((err)=>{
+//     // console.log(err)
+//     })
 
-});
+// });
 
 
 
@@ -152,6 +152,37 @@ app.get("/",async (req,res)=>{
              
     })
            
+  app.get("/all", async (req,res)=>{
+      const auth =new google.auth.GoogleAuth({
+          keyFile : "cred.json",
+          scopes: "https://www.googleapis.com/auth/spreadsheets"
+        })
+        const client = await auth.getClient();
+      
+        const googlesheets = google.sheets({version:"v4",auth: client})
+      
+        const spreadsheetId = "1AeJoJQ2qEWy1y-3Fu2vP8917zOQb90nToplS6x5Z0Qk"
+        
+        const viewRows = await googlesheets.spreadsheets.values.get({
+          auth,
+          spreadsheetId,
+          range:"data!A:c",
+        })
+        const len = viewRows.data.values.length -1 
+        const tareek = viewRows.data.values[len][0].slice(0,10)
+        let responseArr = []
+        for(i=1;i<len+1;i++){
+          responseArr.push({
+            "date":tareek,
+            "heading":viewRows.data.values[i][1],
+            "content":viewRows.data.values[i][2]
+           })
+        }
+       res.json(responseArr)    
+               
+             
+  })
+  
 
 
 
